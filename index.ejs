@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mini Blog</title>
+</head>
+<body>
+  <header>
+    <h1>Mini Blog</h1>
+    <% if (user) { %>
+      <form action="/logout" method="POST" style="display:inline">
+        <button>Logout (<%= user.name %>)</button>
+      </form>
+    <% } else { %>
+      <a href="/signin">Sign In</a> | <a href="/signup">Sign Up</a>
+    <% } %>
+  </header>
+
+  <% if (error) { %><p style="color:red"><%= error %></p><% } %>
+
+  <% if (page === 'feed') { %>
+    <% if (user) { %>
+      <h2>Create a New Post</h2>
+      <form action="/posts" method="POST">
+        <input name="title" placeholder="Title" required /><br />
+        <textarea name="body" placeholder="Body" required></textarea><br />
+        <button type="submit">Post</button>
+      </form>
+    <% } else { %>
+      <p><a href="/signin">Sign in</a> to create posts.</p>
+    <% } %>
+
+    <h2>All Blogs</h2>
+    <% blogs.forEach(blog => { %>
+      <div>
+        <h3><%= blog.title %></h3>
+        <p><%= blog.body %></p>
+        <p>By <b><%= blog.creator_name %></b> on <%= blog.date_created.toDateString() %></p>
+
+        <% if (user && user.user_id === blog.creator_user_id) { %>
+          <form action="/posts/<%= blog.blog_id %>/edit" method="POST">
+            <input name="title" value="<%= blog.title %>" required />
+            <textarea name="body" required><%= blog.body %></textarea>
+            <button>Save Edit</button>
+          </form>
+          <form action="/posts/<%= blog.blog_id %>/delete" method="POST">
+            <button style="background:red;color:white">Delete</button>
+          </form>
+        <% } %>
+      </div>
+    <% }) %>
+  <% } else if (page === 'signup') { %>
+    <h2>Sign Up</h2>
+    <form method="POST" action="/signup">
+      <input name="user_id" placeholder="User ID" required /><br />
+      <input type="password" name="password" placeholder="Password" required /><br />
+      <input name="name" placeholder="Full Name" required /><br />
+      <button>Register</button>
+    </form>
+  <% } else if (page === 'signin') { %>
+    <h2>Sign In</h2>
+    <form method="POST" action="/signin">
+      <input name="user_id" placeholder="User ID" required /><br />
+      <input type="password" name="password" placeholder="Password" required /><br />
+      <button>Login</button>
+    </form>
+  <% } %>
+</body>
+</html>
